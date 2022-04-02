@@ -1,0 +1,3 @@
+# Ignore all exe and csv
+*.exe
+*.csv
