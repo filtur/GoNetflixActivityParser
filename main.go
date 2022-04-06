@@ -58,7 +58,7 @@ func main() {
 func handleInput(input string, movies map[string]Movie) {
 	switch input {
 	case "/stats":
-		fmt.Printf("Items watched: %d\n", len(movies))
+		fmt.Printf("Movies watched: %d\n", len(movies))
 	case "/quit":
 		os.Exit(3)
 	case "/movies":
