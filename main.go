@@ -28,6 +28,7 @@ func main() {
 
 	if len(args) == 0 {
 		fmt.Println("Usage: GoNetflixActivityParser <input file path>")
+		return
 	}
 
 	f, err := os.Open(args[0])
