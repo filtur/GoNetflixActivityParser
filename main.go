@@ -73,11 +73,11 @@ func parseMovie(line []string, movies map[string]Movie) {
 	movies[m.Title] = m
 }
 
-func getFormattedDate(d string) time.Time {
-	fd, err := time.Parse("1/2/06", d)
+func getFormattedDate(date string) time.Time {
+	d, err := time.Parse("1/2/06", date)
 	if err != nil {
 		panic(err)
 	}
 
-	return fd
+	return d
 }
