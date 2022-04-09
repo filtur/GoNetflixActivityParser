@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/filtur/GoNetflixActivityParser/models"
 )
 
 type CsvHeader int
@@ -17,14 +19,9 @@ const (
 	WatchDate
 )
 
-type Movie struct {
-	Title     string
-	WatchDate time.Time
-}
-
 func main() {
 	args := os.Args[1:]
-	movies := make(map[string]Movie)
+	movies := make(map[string]models.Movie)
 
 	if len(args) == 0 {
 		fmt.Println("Usage: GoNetflixActivityParser <input file path>")
@@ -56,7 +53,7 @@ func main() {
 	}
 }
 
-func handleInput(input string, movies map[string]Movie) {
+func handleInput(input string, movies map[string]models.Movie) {
 	switch input {
 	case "/stats":
 		fmt.Printf("Movies watched: %d\n", len(movies))
@@ -69,8 +66,8 @@ func handleInput(input string, movies map[string]Movie) {
 	}
 }
 
-func parseMovie(line []string, movies map[string]Movie) {
-	m := Movie{Title: line[Title], WatchDate: getFormattedDate(line[WatchDate])}
+func parseMovie(line []string, movies map[string]models.Movie) {
+	m := models.Movie{Title: line[Title], WatchDate: getFormattedDate(line[WatchDate])}
 	movies[m.Title] = m
 }
 
