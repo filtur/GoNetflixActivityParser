@@ -21,7 +21,7 @@ const (
 
 func main() {
 	args := os.Args[1:]
-	movies := make(map[string]models.Movie)
+	var movies []models.Movie
 
 	if len(args) == 0 {
 		fmt.Println("Usage: GoNetflixActivityParser <input file path>")
@@ -42,18 +42,33 @@ func main() {
 
 	for _, line := range data[1:] {
 		if !strings.Contains(line[Title], "Season") {
-			parseMovie(line, movies)
+			movies = append(movies, parseMovie(line))
 		}
 	}
 
 	fmt.Println("Enter a command")
 	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		handleInput(scanner.Text(), movies)
+	for {
+		scanner.Scan()
+		t := scanner.Text()
+
+		if strings.HasPrefix(t, "/search") {
+			fmt.Println("Enter Search Term")
+			c := make(chan string)
+			scanner.Scan()
+			s := scanner.Text()
+			go searchMovies(movies[:len(movies)/2], s, c)
+			go searchMovies(movies[len(movies)/2:], s, c)
+			fmt.Println(<-c)
+		} else {
+			handleInput(t, movies)
+		}
+
+		fmt.Println("Enter a command")
 	}
 }
 
-func handleInput(input string, movies map[string]models.Movie) {
+func handleInput(input string, movies []models.Movie) {
 	switch input {
 	case "/stats":
 		fmt.Printf("Movies watched: %d\n", len(movies))
@@ -66,9 +81,20 @@ func handleInput(input string, movies map[string]models.Movie) {
 	}
 }
 
-func parseMovie(line []string, movies map[string]models.Movie) {
+func searchMovies(movies []models.Movie, searchTerm string, ch chan string) {
+	s := strings.ToLower(searchTerm)
+	r := ""
+	for _, m := range movies {
+		if strings.Contains(strings.ToLower(m.Title), s) {
+			r += fmt.Sprintf("%s\n", m.Title)
+		}
+	}
+	ch <- r
+}
+
+func parseMovie(line []string) models.Movie {
 	m := models.Movie{Title: line[Title], WatchDate: getFormattedDate(line[WatchDate])}
-	movies[m.Title] = m
+	return m
 }
 
 func getFormattedDate(date string) time.Time {
